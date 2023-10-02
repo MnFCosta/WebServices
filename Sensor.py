@@ -17,27 +17,27 @@ class TelaPrincipal(QWidget):
 
     def initUI(self):
         # Widgets
-        self.label = QLabel(f'Crie mensagens')
-        self.botao_criar_dado = QPushButton('Criar dado')
-        self.botao_parar = QPushButton('Parar criação')
-        self.botao_cancelar = QPushButton('Cancelar')
+        self.botao_criar_dado = QPushButton('Criar dado', self)
+        self.botao_parar = QPushButton('Parar criação',self)
+        self.botao_cancelar = QPushButton('X',self)
 
-        # Configurar layout
-        layout = QVBoxLayout()
-        layout.addWidget(self.label)
-        layout.addWidget(self.botao_criar_dado)
-        layout.addWidget(self.botao_parar)
-        layout.addWidget(self.botao_cancelar)
+    
+        self.setWindowTitle('Sensor')
+        self.setGeometry(560, 200, 800, 600)
+
+        # Posicionar os widgets na tela
+        self.botao_criar_dado.setGeometry(10, 10, 100, 30)
+        self.botao_parar.setGeometry(120, 10, 100, 30)
+        self.botao_cancelar.setGeometry(750, 10, 40, 30)
+
+        #Estilização
+        self.botao_cancelar.setStyleSheet("background-color: red; color: black;")   
         
-        self.setLayout(layout)
+        # Configurar layout
 
         self.botao_criar_dado.clicked.connect(self.criar_dado)
         self.botao_parar.clicked.connect(self.parar_thread)
         self.botao_cancelar.clicked.connect(self.close)
-
-        
-        self.setWindowTitle('Tela Principal')
-        self.setGeometry(560, 200, 800, 600)
     
     def criar_dado(self):
         self.dadothread = CriarDadoThread()
@@ -61,7 +61,7 @@ class CriarDadoThread(QThread):
             luminosidade = ['Baixa', 'Média', 'Alta']
             data_hora_atual = datetime.now()
             data = data_hora_atual.strftime("%d-%m-%Y")
-            hora = data_hora_atual.strftime("%H:%M:%S")
+            hora = data_hora_atual.strftime("%H:%M")
 
             
             dado = {'temperatura': f'{temp}°C', 'umidade': f'{umidade}%', 'luminosidade': f'{random.choice(luminosidade)}', 'data': f'{data}', 'hora': f'{hora}'}

@@ -12,7 +12,7 @@ umidade = random.randint(0,100)
 luminosidade = ['Baixa', 'Média', 'Alta']
 data_hora_atual = datetime.now()
 data = data_hora_atual.strftime("%d-%m-%Y")
-hora = data_hora_atual.strftime("%H:%M:%S")
+hora = data_hora_atual.strftime("%H:%M")
 
 dados = [
     {'id': 1, 'temperatura': f'{temp}°C', 'umidade': f'{umidade}%', 'luminosidade': f'{random.choice(luminosidade)}', 'data': f'{data}','hora':f'{hora}',}
@@ -39,6 +39,34 @@ def obter_dado(id_dado):
      if not dado_encontrado: 
          abort(404)
      return jsonify({'dados': dado_encontrado})
+
+@app.route('/dados/ultimaleitura', methods=['GET'])
+def obter_ultima_leitura():
+     lendados = len(dados)
+     dado = []
+     dado.append(dados[lendados-1])
+
+     if not lendados: 
+         abort(404)
+     return jsonify({'dados': dado})
+
+@app.route('/dados/datahora/<datahora>', methods=['GET'])
+def obter_datahora(datahora):
+    dado = datahora
+    data = dado[0:10]
+    hora = dado[10:15]
+    retorno = []
+
+    print(f'DATA = {data} HORA = {hora}')
+    for d in dados:
+        if d['data'] == data and d['hora'] == hora:
+            retorno.append(d)
+
+    print(retorno)
+
+    if not retorno: 
+        abort(404)
+    return jsonify({'dados': retorno})
 
 @app.route('/dados', methods=['POST'])
 def criar_dado():
@@ -72,6 +100,9 @@ def atualizar_dado(id_dado):
      dado['temperatura'] = request.json.get('temperatura', dado['temperatura'])
      dado['umidade'] = request.json.get('umidade', dado['umidade'])
      dado['luminosidade'] = request.json.get('luminosidade', dado['luminosidade'])
+     dado['data'] = request.json.get('data', dado['data'])
+     dado['hora'] = request.json.get('hora', dado['hora'])
+
      return jsonify({'dado': dado})
 
 @app.route('/dados/<int:id_dado>', methods=['DELETE'])
