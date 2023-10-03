@@ -2,8 +2,10 @@ import requests
 import time
 import random
 import sys
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, QRect
+from PyQt5.QtGui import QPainter, QColor
 from datetime import datetime
 
 # URL SERVIDOR FLASK
@@ -17,21 +19,25 @@ class TelaPrincipal(QWidget):
 
     def initUI(self):
         # Widgets
+        self.label = QLabel('Sensor inativo', self)
         self.botao_criar_dado = QPushButton('Criar dado', self)
         self.botao_parar = QPushButton('Parar criação',self)
         self.botao_cancelar = QPushButton('X',self)
+        self.quadrado = QuadradoWidget(self)
 
     
         self.setWindowTitle('Sensor')
-        self.setGeometry(560, 200, 800, 600)
+        self.setGeometry(100, 100, 400, 300)
 
         # Posicionar os widgets na tela
+        self.label.setGeometry(10,90,100,30)
         self.botao_criar_dado.setGeometry(10, 10, 100, 30)
         self.botao_parar.setGeometry(120, 10, 100, 30)
-        self.botao_cancelar.setGeometry(750, 10, 40, 30)
+        self.botao_cancelar.setGeometry(350, 10, 40, 30)
+        self.quadrado.setGeometry(125, 120, 200, 200)
 
         #Estilização
-        self.botao_cancelar.setStyleSheet("background-color: red; color: black;")   
+        self.botao_cancelar.setStyleSheet("background-color: red; color: black;")
         
         # Configurar layout
 
@@ -40,10 +46,16 @@ class TelaPrincipal(QWidget):
         self.botao_cancelar.clicked.connect(self.close)
     
     def criar_dado(self):
+        self.label.setText('Criando dados')
+        self.quadrado.cor_quadrado = QColor(0, 217, 14)
+        self.quadrado.update()
         self.dadothread = CriarDadoThread()
         self.dadothread.start()
     
     def parar_thread(self):
+        self.label.setText('Sensor Inativo')
+        self.quadrado.cor_quadrado = QColor(255, 0, 0)
+        self.quadrado.update()
         self.dadothread.stop()
             
 
@@ -65,15 +77,25 @@ class CriarDadoThread(QThread):
 
             
             dado = {'temperatura': f'{temp}°C', 'umidade': f'{umidade}%', 'luminosidade': f'{random.choice(luminosidade)}', 'data': f'{data}', 'hora': f'{hora}'}
-            response = requests.post(f'{server_flask}/dados', json=dado)
+            requests.post(f'{server_flask}/dados', json=dado)
 
-            print(response)
             time.sleep(10)
 
-        print("Thread Parada")
+        
 
     def stop(self):
         self.rodando = False
+
+#Widgets
+class QuadradoWidget(QWidget):
+    cor_quadrado = QColor(255, 0, 0)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setPen(QColor(0, 0, 0))
+        painter.setBrush(self.cor_quadrado)
+        
+        painter.drawRect(0, 0, 150, 150)
     
     
 
