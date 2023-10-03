@@ -20,19 +20,29 @@ class TelaPrincipal(QWidget):
     def initUI(self):
         # Widgets
         self.botao_ultima_leitura = QPushButton('Última Leitura',self)
-        self.dados = QLabel('Mensagens:', self)
-        self.botao_datahora = QPushButton('DataHora',self)
+        self.ldata = QLabel('Data:', self)
+        self.lhora = QLabel('Hora:', self)
         self.data = QLineEdit(self)
         self.hora = QLineEdit(self)
+        self.botao_datahora = QPushButton('Buscar',self)
         self.botao_cancelar = QPushButton('X',self)
 
+         # Criar widget da tabela
+        self.tableWidget = QTableWidget(self)
+        self.tableWidget.setGeometry(10, 100, 602, 180)  
+        self.tableWidget.setColumnCount(6) 
+        self.tableWidget.setHorizontalHeaderLabels(["ID", "Temperatura", "Luminosidade", "Umidade", "Data", "Hora"])
+
+        self.tableWidget.verticalHeader().setVisible(False)
+
         # Posicionar os widgets na tela
-        self.botao_ultima_leitura.setGeometry(10, 10, 120, 30)  # X, Y, Width, Height
-        self.botao_datahora.setGeometry(150, 10, 120, 30)
-        self.data.setGeometry(150, 60, 120, 30)
-        self.hora.setGeometry(150, 90, 120, 30)
-        self.dados.setGeometry(10, 200, 800, 30)
-        self.botao_cancelar.setGeometry(750, 10, 40, 30)
+        self.botao_ultima_leitura.setGeometry(10, 65, 120, 30)  # X, Y, Width, Height
+        self.botao_datahora.setGeometry(270, 30, 120, 30)
+        self.ldata.setGeometry(10, 5, 120, 30)
+        self.lhora.setGeometry(140, 5, 120, 30)
+        self.data.setGeometry(10, 30, 120, 30)
+        self.hora.setGeometry(140, 30, 120, 30)
+        self.botao_cancelar.setGeometry(590, 2, 20, 20)
 
         #Estilização
         self.botao_cancelar.setStyleSheet("background-color: red; color: black;")   
@@ -48,27 +58,24 @@ class TelaPrincipal(QWidget):
         self.dadothread.dado_recebido.connect(self.atualizar_dado)
         self.datathread.dado_recebido.connect(self.atualizar_dado)
         self.setWindowTitle('Consumidor')
-        self.setGeometry(560, 200, 800, 600)
+        self.setGeometry(530, 100, 620, 300)
     
     def atualizar_dado(self, data):
-        print("Received JSON data:", data)
-        dados = ""
-        
         try:
+            self.tableWidget.setRowCount(0)
             for d in data['dados']:
-                dados += (f"Id: {d['id']} " +
-                    f"Temperatura: {d['temperatura']} " +
-                    f"Luminosidade: {d['luminosidade']} " +
-                    f"Umidade: {d['umidade']} " +
-                    f"Data: {d['data']} " +
-                    f"Hora: {d['hora']}\n"
-                )
+                posicao = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(posicao)
+                self.tableWidget.setItem(posicao, 0, QTableWidgetItem(str(d['id'])))
+                self.tableWidget.setItem(posicao, 1, QTableWidgetItem(str(d['temperatura'])))
+                self.tableWidget.setItem(posicao, 2, QTableWidgetItem(str(d['luminosidade'])))
+                self.tableWidget.setItem(posicao, 3, QTableWidgetItem(str(d['umidade'])))
+                self.tableWidget.setItem(posicao, 4, QTableWidgetItem(str(d['data'])))
+                self.tableWidget.setItem(posicao, 5, QTableWidgetItem(str(d['hora'])))
         except:
-            dados = "Dado não encontrado!"
+           pass
         
-        print(dados)
-
-        self.dados.setText(dados)
+        
     
     def retornar_dado(self):
         self.dadothread.start()
@@ -111,8 +118,6 @@ class RetornarDadoDataHoraThread(QThread):
     
     def gethora(self, hora):
         self.hora = hora
-
-
 
 if __name__ == '__main__':
     #Cria uma instancia da aplicação PyQt, necessária para configurar a interface gráfica e o loop de eventos

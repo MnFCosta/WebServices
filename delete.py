@@ -8,4 +8,3 @@ base_url = 'http://localhost:5000'
 
 id = 2
 response = requests.delete(f'{base_url}/dados/{id}',)
-print(f'Excluir dado com ID: {id}')

@@ -20,4 +20,3 @@ hora = data_hora_atual.strftime("%H:%M")
             
 dado = {'temperatura': f'{temp}°C', 'umidade': f'{umidade}%', 'luminosidade': f'{random.choice(luminosidade)}', 'data': f'{data}', 'hora': f'{hora}'}
 response = requests.put(f'{base_url}/dados/{id}', json=dado,)
-print(f'Atualizar informações do dado com ID: {id}')

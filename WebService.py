@@ -57,12 +57,9 @@ def obter_datahora(datahora):
     hora = dado[10:15]
     retorno = []
 
-    print(f'DATA = {data} HORA = {hora}')
     for d in dados:
         if d['data'] == data and d['hora'] == hora:
             retorno.append(d)
-
-    print(retorno)
 
     if not retorno: 
         abort(404)
@@ -81,7 +78,6 @@ def criar_dado():
         'hora': request.json['hora'],
     }
     dados.append(dado)
-    print("Novo dado cadastrado!")
     return jsonify({'dados': dados}), 201
 
 @app.route('/dados/<int:id_dado>', methods=['PUT'])
