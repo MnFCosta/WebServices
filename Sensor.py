@@ -17,6 +17,8 @@ class TelaPrincipal(QWidget):
     
         self.initUI()
 
+        self.dado_thread_rodando = False
+
     def initUI(self):
         # Widgets
         self.label = QLabel('Sensor inativo', self)
@@ -46,17 +48,21 @@ class TelaPrincipal(QWidget):
         self.botao_cancelar.clicked.connect(self.close)
     
     def criar_dado(self):
-        self.label.setText('Criando dados')
-        self.quadrado.cor_quadrado = QColor(0, 217, 14)
-        self.quadrado.update()
-        self.dadothread = CriarDadoThread()
-        self.dadothread.start()
+        if not self.dado_thread_rodando:
+            self.label.setText('Criando dados')
+            self.quadrado.cor_quadrado = QColor(0, 217, 14)
+            self.quadrado.update()
+            self.dadothread = CriarDadoThread()
+            self.dadothread.start()
+            self.dado_thread_rodando = True
     
     def parar_thread(self):
-        self.label.setText('Sensor Inativo')
-        self.quadrado.cor_quadrado = QColor(255, 0, 0)
-        self.quadrado.update()
-        self.dadothread.stop()
+        if self.dado_thread_rodando:
+            self.label.setText('Sensor Inativo')
+            self.quadrado.cor_quadrado = QColor(255, 0, 0)
+            self.quadrado.update()
+            self.dadothread.stop()
+            self.dado_thread_rodando = False
             
 
 
@@ -64,10 +70,10 @@ class CriarDadoThread(QThread):
 
     def __init__(self, parent=None,):
         super().__init__(parent)
-        self.rodando = True
+        self.rodar = True
 
-    def run(self):
-        while self.rodando == True:
+    def run(self): 
+        while self.rodar == True:
             temp = random.randint(0,40)
             umidade = random.randint(0,100)
             luminosidade = ['Baixa', 'Média', 'Alta']
@@ -81,10 +87,8 @@ class CriarDadoThread(QThread):
 
             time.sleep(10)
 
-        
-
     def stop(self):
-        self.rodando = False
+        self.rodar = False
 
 #Widgets
 class QuadradoWidget(QWidget):
