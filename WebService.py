@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, make_response, request, abort
-from flask_httpauth import HTTPBasicAuth
 import random
 from datetime import datetime
 
@@ -25,7 +24,7 @@ def erro(erro):
 
 # Rotas para a API
 @app.route('/dados', methods=['GET'])
-def obter_livros():
+def obter_dados():
     return jsonify({'dados': dados})
 
 @app.route('/dados/<int:id_dado>', methods=['GET'])

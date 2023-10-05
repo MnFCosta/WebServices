@@ -2,9 +2,8 @@ import requests
 import time
 import random
 import sys
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout
-from PyQt5.QtCore import QThread, pyqtSignal, QRect
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton
+from PyQt5.QtCore import QThread
 from PyQt5.QtGui import QPainter, QColor
 from datetime import datetime
 
