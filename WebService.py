@@ -69,8 +69,13 @@ def obter_datahora(datahora):
 def criar_dado():
     if not request.json or 'temperatura' not in request.json:
         abort(400)
+    try:
+        id = dados[-1]['id'] + 1
+    except:
+        id = 1
+
     dado = {
-        'id': dados[-1]['id'] + 1,
+        'id': id,
         'temperatura': request.json['temperatura'],
         'umidade': request.json['umidade'],
         'luminosidade': request.json['luminosidade'],
@@ -93,8 +98,11 @@ def atualizar_dado(id_dado):
      if not request.json:
          abort(400)
 
-     dado['temperatura'] = request.json.get('temperatura', dado['temperatura'])
-     dado['umidade'] = request.json.get('umidade', dado['umidade'])
+     if request.json.get('temperatura') != '°C':  
+        dado['temperatura'] = request.json.get('temperatura', dado['temperatura'])
+     if request.json.get('umidade') != '%':  
+        dado['umidade'] = request.json.get('umidade', dado['umidade'])
+
      dado['luminosidade'] = request.json.get('luminosidade', dado['luminosidade'])
      dado['data'] = request.json.get('data', dado['data'])
      dado['hora'] = request.json.get('hora', dado['hora'])
@@ -112,6 +120,9 @@ def excluir_dado(id_dado):
 
     if not dado:
         abort(404)
+    
+    dados.remove(dado)
+
     return jsonify({'resultado': True})
 
 if __name__ == "__main__":
